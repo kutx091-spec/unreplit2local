@@ -1,0 +1,152 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Replit-to-Local API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: convert
+    description: Zip conversion operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /convert/{jobId}/status:
+    get:
+      operationId: getConvertStatus
+      tags: [convert]
+      summary: Get the status and log of a conversion job
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Job status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConvertStatus"
+        "404":
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ConvertJob:
+      type: object
+      required: [jobId, status]
+      properties:
+        jobId:
+          type: string
+          description: Unique job identifier
+        status:
+          type: string
+          enum: [pending, running, done, error]
+
+    ConvertStatus:
+      type: object
+      required: [jobId, status, logs]
+      properties:
+        jobId:
+          type: string
+        status:
+          type: string
+          enum: [pending, running, done, error]
+        logs:
+          type: array
+          items:
+            $ref: "#/components/schemas/LogLine"
+        analysis:
+          $ref: "#/components/schemas/ProjectAnalysis"
+
+    LogLine:
+      type: object
+      required: [level, message]
+      properties:
+        level:
+          type: string
+          enum: [info, warn, error, success]
+        message:
+          type: string
+
+    ProjectAnalysis:
+      type: object
+      properties:
+        stack:
+          type: array
+          items:
+            type: string
+          description: Detected stacks e.g. ["node", "python"]
+        startCommand:
+          type: ["string", "null"]
+          description: The detected start command from .replit
+        startCommands:
+          type: array
+          items:
+            type: string
+          description: All detected service start commands
+        packageManager:
+          type: string
+          enum: [pnpm, yarn, npm]
+          description: Detected Node package manager
+        isHybrid:
+          type: boolean
+        needsDatabase:
+          type: boolean
+        orphanedScripts:
+          type: array
+          items:
+            type: string
+        replitPlugins:
+          type: array
+          items:
+            type: string
+        envKeys:
+          type: array
+          items:
+            type: string
+        nixPackages:
+          type: array
+          items:
+            type: string
+        runtimes:
+          type: array
+          items:
+            type: string
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
