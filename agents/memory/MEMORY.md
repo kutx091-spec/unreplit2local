@@ -1,0 +1,6 @@
+- [Arranque híbrido](hybrid-start-detection.md) — priorizar scripts multi-proceso y no duplicar Python cuando el comando Node ya lo coordina.
+- [Imports Python locales](python-local-imports.md) — resolver imports contra módulos reales antes de clasificar scripts como huérfanos.
+- [Fallbacks de configuración Replit](replit-config-fallbacks.md) — puertos, deployment arrays y entrypoints deben alimentar la conversión sin copiar rutas internas.
+- [Retención de conversiones y reportes](conversion-retention.md) — archivos temporales se limpian por job/reinicio; los reportes dependen de la retención de logs del despliegue.
+- [Scripts delegados en Windows](windows-delegated-scripts.md) — los comandos pnpm --filter necesitan conservar el script real y su directorio para convertir sintaxis Unix en run.bat.
+- [Validación previa de ZIP](zip-ingestion-security.md) — validar tamaños, ratios, rutas y symlinks antes de crear el directorio de extracción.
